@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class MeetnoteBackendApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(MeetnoteBackendApplication.class, args);
+
 	}
 
 }

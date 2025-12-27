@@ -1,0 +1,20 @@
+package com.worktemperature.meetnote_backend;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@Entity
+@Table(name="member")
+public class Member {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    private String userCode;
+    private String name;
+    private String email;
+
+}
