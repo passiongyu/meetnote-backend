@@ -1,4 +1,4 @@
-package com.worktemperature.meetnote_backend;
+package com.worktemperature.meetnote_backend.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
