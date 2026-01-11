@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -35,6 +37,49 @@ public class NoteApiController {
         Long id = noteService.createNote(note);
 
         return new CreateNoteResponse(id);
+    }
+
+    /**
+     * 전체 조회
+     * @return
+     */
+    @GetMapping("/api/notes")
+    public Result getNotes() {
+        List<NoteDto> noteList= noteService.findNotes().stream()
+                .map(m -> new NoteDto(m.getId(), m.getTitle(), m.getFolderId(), m.getContent(), m.getMeetDate()))
+                .collect(Collectors.toList());
+
+        int noteListSize = 10;
+        return new Result(noteList, noteListSize);
+    }
+
+    /**
+     * 하나 조회
+     * @return
+     */
+    @GetMapping("/api/notes/{id}")
+    public Result getNote(@PathVariable("id") Long id) {
+        Note note = noteService.findOne(id);
+
+        int noteListSize = 10;
+        return new Result(note, noteListSize);
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class Result<T> {
+        private T data;
+        private int size;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class NoteDto {
+        private Long id;
+        private String title;
+        private int folderId;
+        private String content;
+        private LocalDateTime meetDate;
     }
 
     /**

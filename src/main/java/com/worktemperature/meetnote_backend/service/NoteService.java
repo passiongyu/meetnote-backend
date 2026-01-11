@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -25,6 +27,10 @@ public class NoteService {
         public Note findOne(Long id) {
             Note note = noteRepository.findOne(id);
             return note;
+        }
+
+        public List<Note> findNotes() {
+            return noteRepository.findAll();
         }
 
         @Transactional

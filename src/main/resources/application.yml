@@ -6,7 +6,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: create   # 개발 단계: update / create
+      ddl-auto: none   # 개발 단계: update / create
     properties:
       hibernate:
         format_sql: true
