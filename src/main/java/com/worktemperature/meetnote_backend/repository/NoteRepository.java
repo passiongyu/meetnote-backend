@@ -18,4 +18,16 @@ public class NoteRepository {
     public Note findOne(Long id) {
         return em.find(Note.class, id);
     }
+
+    public void updateNote(Long id, Note updateNote) {
+        Note note = em.find(Note.class, id);
+        note.setTitle(updateNote.getTitle());
+        note.setMeetDate(updateNote.getMeetDate());
+        note.setFolderId(updateNote.getFolderId());
+        note.setContent(updateNote.getContent());
+    }
+
+    public void deleteNote(Long id) {
+        //em.remove();
+    }
 }

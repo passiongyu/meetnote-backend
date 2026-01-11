@@ -20,4 +20,20 @@ public class NoteService {
             noteRepository.save(note);
             return note.getId();
         }
+
+        @Transactional
+        public Note findOne(Long id) {
+            Note note = noteRepository.findOne(id);
+            return note;
+        }
+
+        @Transactional
+        public void updateNote(Long id, Note updateNote) {
+            Note note = noteRepository.findOne(id);
+
+            note.setTitle(updateNote.getTitle());
+            note.setMeetDate(updateNote.getMeetDate());
+            note.setFolderId(updateNote.getFolderId());
+            note.setContent(updateNote.getContent());
+        }
 }
