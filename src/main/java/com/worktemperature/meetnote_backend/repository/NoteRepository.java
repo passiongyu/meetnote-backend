@@ -41,7 +41,10 @@ public class NoteRepository {
         note.setContent(updateNote.getContent());
     }
 
-    public void deleteNote(Long id) {
-        //em.remove();
+    public void delete(Long id) {
+        Note note = em.find(Note.class, id);
+        if (note != null) {
+            em.remove(note);
+        }
     }
 }

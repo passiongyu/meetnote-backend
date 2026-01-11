@@ -42,4 +42,9 @@ public class NoteService {
             note.setFolderId(updateNote.getFolderId());
             note.setContent(updateNote.getContent());
         }
+
+        @Transactional
+        public void deleteNote(Long id) {
+            noteRepository.delete(id);
+        }
 }

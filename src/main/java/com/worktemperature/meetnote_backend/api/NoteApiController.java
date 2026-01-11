@@ -103,6 +103,26 @@ public class NoteApiController {
         return new UpdateNoteResponse(id, resultNote.getTitle(), resultNote.getFolderId(), resultNote.getContent(), resultNote.getMeetDate());
     }
 
+    /**
+     * 하나 삭제
+     * @return
+     */
+    @DeleteMapping("/api/notes/{id}")
+    public DeleteResult deleteNote(@PathVariable("id") Long id) {
+        noteService.deleteNote(id);
+
+        return new DeleteResult("삭제완료", "SUCCESS");
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class DeleteResult {
+        private String message;
+        private String successYn;
+
+    }
+
+
     @Data
     @AllArgsConstructor
     static class UpdateNoteResponse {
