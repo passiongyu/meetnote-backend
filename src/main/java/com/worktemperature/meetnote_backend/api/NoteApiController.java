@@ -49,7 +49,7 @@ public class NoteApiController {
                 .map(m -> new NoteDto(m.getId(), m.getTitle(), m.getFolderId(), m.getContent(), m.getMeetDate()))
                 .collect(Collectors.toList());
 
-        int noteListSize = 10;
+        int noteListSize = noteList.size();
         return new Result(noteList, noteListSize);
     }
 
