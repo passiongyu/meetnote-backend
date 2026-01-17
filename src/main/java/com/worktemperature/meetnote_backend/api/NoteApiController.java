@@ -1,16 +1,26 @@
 package com.worktemperature.meetnote_backend.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.worktemperature.meetnote_backend.domain.Note;
 import com.worktemperature.meetnote_backend.service.NoteService;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -39,8 +49,11 @@ public class NoteApiController {
         return new CreateNoteResponse(id);
     }
 
+
+
+
     /**
-     * 전체 조회
+     * 리스트 조회
      * @return
      */
     @GetMapping("/api/notes")
@@ -65,30 +78,13 @@ public class NoteApiController {
         return new Result(note, noteListSize);
     }
 
-    @Data
-    @AllArgsConstructor
-    static class Result<T> {
-        private T data;
-        private int size;
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class NoteDto {
-        private Long id;
-        private String title;
-        private int folderId;
-        private String content;
-        private LocalDateTime meetDate;
-    }
-
     /**
      * 수정
      * @param id
      * @param request
      * @return
      */
-    @PutMapping("/api/notes/{id}")
+    @PatchMapping("/api/notes/{id}")
     public UpdateNoteResponse updateNote(@PathVariable("id") Long id, @RequestBody @Validated UpdateNoteRequest request) {
 
         Note note = new Note();
@@ -113,6 +109,110 @@ public class NoteApiController {
 
         return new DeleteResult("삭제완료", "SUCCESS");
     }
+
+    /**
+     * 등록
+     * @param request
+     * @return
+     */
+    @PostMapping("/api/notesFromJson")
+    @ResponseBody
+    public CreateNoteResponse createNoteFromJson(HttpEntity<CreateNoteRequest> httpEntity) {
+        Note note = new Note();
+
+        CreateNoteRequest createNoteRequest = httpEntity.getBody();
+
+        note.setTitle(createNoteRequest.getTitle());
+        note.setFolderId(createNoteRequest.getFolderId());
+        note.setContent(createNoteRequest.getContent());
+        note.setMeetDate(createNoteRequest.getMeetDate());
+
+        Long id = noteService.createNote(note);
+
+        return new CreateNoteResponse(id);
+    }
+
+    /**
+     * 등록
+     * @param request
+     * @return
+     */
+    @PostMapping("/api/notesFromObjectMapper")
+    @ResponseBody
+    public CreateNoteResponse createNoteFromObjectMapper(HttpServletRequest request) throws IOException {
+        Note note = new Note();
+
+        ServletInputStream in = request.getInputStream();
+        String messageBody = StreamUtils.copyToString(in, StandardCharsets.UTF_8);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        CreateNoteRequest noteDto = objectMapper.readValue(messageBody, CreateNoteRequest.class);
+
+        note.setTitle(noteDto.getTitle());
+        note.setFolderId(noteDto.getFolderId());
+        note.setContent(noteDto.getContent());
+        note.setMeetDate(noteDto.getMeetDate());
+
+        Long id = noteService.createNote(note);
+
+        return new CreateNoteResponse(id);
+    }
+
+    /**
+     * 등록 form-파라미터 방식 또는 쿼리 파라미터 방식
+     * @param 여러가지
+     * @return
+     */
+    @PostMapping("/api/notesFromForm")
+    public CreateNoteResponse createNoteFromFormData(@ModelAttribute CreateNoteRequest noteDto, @RequestParam String title, @RequestParam Map<String, Object> paramMap, HttpServletRequest request) {
+        Note note = new Note();
+        String content = request.getParameter("content");
+        note.setTitle(title);
+        note.setContent(content);
+        System.out.println(paramMap.toString());
+
+        Long id = noteService.createNote(note);
+
+        return new CreateNoteResponse(id);
+    }
+
+    /**
+     * 등록
+     * @param body text
+     * @return
+     */
+    @PostMapping("/api/notesFromText")
+    public ResponseEntity createNoteFromText(HttpEntity<String> httpEntity) {
+        Note note = new Note();
+
+        String text = httpEntity.getBody();
+        note.setTitle(text);
+
+        Long id = noteService.createNote(note);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(Map.of("id", id));
+    }
+
+
+    @Data
+    @AllArgsConstructor
+    static class Result<T> {
+        private T data;
+        private int size;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class NoteDto {
+        private Long id;
+        private String title;
+        private int folderId;
+        private String content;
+        private LocalDateTime meetDate;
+    }
+
 
     @Data
     @AllArgsConstructor
